@@ -6,24 +6,37 @@ import React, { Component } from 'react';
   var URL = require('url-parse');
   var ReactDOM = require('react-dom');
 
+  var allowCrossDomain = function(req, res, next) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
+
+    // intercept OPTIONS method
+    if ('OPTIONS' == req.method) {
+      res.send(200);
+    }
+    else {
+      console.log("yes");
+      next();
+    }
+  };
+
   var CORS = "https://cors-anywhere.herokuapp.com/";
 
-  let START_URL = "https://www.huffingtonpost.com/";
+  let START_URL = "https://www.google.com/";
   let searchword = "battery";
-  var MAX_PAGES_TO_VISIT = 10;
+  let phrases = [];
+  let threshold = 3;
+  var MAX_PAGES_TO_VISIT = 300;
 
   var pagesVisited = {};
   var numPagesVisited = 0;
   var pagesToVisit = [];
   var url = new URL(CORS + START_URL);
-  var baseUrl = url.protocol + "//" + url.hostname;
+  let origin_url = new URL(START_URL);
+  let baseUrl = origin_url.protocol + "//" + origin_url.hostname;
 
   pagesToVisit.push(CORS + START_URL);
-
-  function enterWord(word) {
-    searchword = word;
-    console.log("The sw: " + searchword);
-  }
 
   function crawl() {
     if(numPagesVisited >= MAX_PAGES_TO_VISIT) {
@@ -52,6 +65,8 @@ import React, { Component } from 'react';
     ReactDOM.render(urls, document.getElementById('url'));
     window.crawlerComponent.addURL(url);
 
+    request(url, allowCrossDomain);
+
 
 
     request(url, function(error, response, body) {
@@ -63,8 +78,8 @@ import React, { Component } from 'react';
        }
        // Parse the document body
        var $ = cheerio.load(body);
-       var isWordFound = searchForWord($, searchword);
-       if(isWordFound) {
+       console.log(phrases);
+       if(satisfiesThreshold($, phrases, threshold)) {
          const found ="Word "+ searchword+ " found on " + url;
 
          ReactDOM.render(found, document.getElementById('found'));
@@ -78,6 +93,14 @@ import React, { Component } from 'react';
     });
   }
 
+  function satisfiesThreshold($, words, threshold) {
+    var sum = 0;
+    for(var i = 0; i < words.length; i++) {
+      if(searchForWord($, words[i])) sum++;
+    }
+    return (sum >= threshold);
+  }
+
   function searchForWord($, word) {
     var bodyText = $('html > body').text().toLowerCase();
     return(bodyText.indexOf(word.toLowerCase()) !== -1);
@@ -86,14 +109,14 @@ import React, { Component } from 'react';
   function collectInternalLinks($) {
       var relativeLinks = $("a[href^='/']");
       var absoluteLinks = $("a[href^='http']");
-        absoluteLinks.each(function() {
-        pagesToVisit.push(CORS + $(this).attr('href'));
+      relativeLinks.each(function() {
+        pagesToVisit.push(CORS + baseUrl +$(this).attr('href'));
       });
-      const links ="Found " + absoluteLinks.length + " links on page!";
+      const links ="Found " + relativeLinks.length + " links on page!";
 
       window.crawlerComponent.addNoLinks(links);
 
-      console.log("Found " + absoluteLinks.length + " relative links on page");
+      console.log("Found " + relativeLinks.length + " relative links on page");
   }
 
 
@@ -111,13 +134,23 @@ class WebCrawler extends Component {
   handleWord = event => {
    event.preventDefault();
    searchword = event.target.value;
+
+   var array = JSON.parse("[" + searchword + "]");
+   phrases = array;
   };
 
   handleUrl = event => {
    event.preventDefault();
    START_URL = event.target.value;
+   origin_url = new URL(event.target.value);
+   baseUrl = origin_url.protocol + "//" + origin_url.hostname;
    pagesToVisit.push(CORS + START_URL);
 
+  };
+
+  handleThres = event => {
+   threshold = event.target.value;
+   console.log(threshold);
   };
 
   handleSubmit = event => {
@@ -125,11 +158,11 @@ class WebCrawler extends Component {
   }
 
   addNoLinks(string){
-    document.getElementById("nolinks").innerHTML += string + '<br />';
+    document.getElementById("nolinks").innerHTML += '<br />' + string + '<br />';
   }
 
   addURL(string){
-    document.getElementById("url").innerHTML += string + '<br />';
+    document.getElementById("url").innerHTML += '<br />' + string + '<br />';
   }
 
 
@@ -138,8 +171,8 @@ class WebCrawler extends Component {
       <div className="container-fluid">
         Web crawler contents here!
         <form onSubmit = {this.handleSubmit}>
+          <p>Enter phrases to search on (in quotes, comma separated e.g. ["cat and dog", "car"]):</p>
           <label>
-            Enter word to search on:
             <input class="form-control" type="text" name="word" onChange={this.handleWord} />
           </label>
           <input class="btn btn-primary" type="submit" value="Submit" />
@@ -151,6 +184,17 @@ class WebCrawler extends Component {
           </label>
           <input class="btn btn-primary" type="submit" value="Submit" />
         </form>
+        <div class="form-group">
+         <label for="exampleSelect1">Select threshold of phrases to match.</label>
+         <select class="form-control" id="exampleSelect1" onChange={this.handleThres} style={{width: "325px"}}>
+           <option>1</option>
+           <option>2</option>
+           <option>5</option>
+           <option>15</option>
+           <option>20</option>
+         </select>
+       </div>
+
         <button type="button" class="btn btn-outline-primary" onClick={crawl}>Crawl</button>
         <p id="url"></p>
         <p id="nolinks"></p>
