@@ -140,18 +140,18 @@ class WebCrawler extends Component {
         <form onSubmit = {this.handleSubmit}>
           <label>
             Enter word to search on:
-            <input type="text" name="word" onChange={this.handleWord} />
+            <input class="form-control" type="text" name="word" onChange={this.handleWord} />
           </label>
-          <input type="submit" value="Submit" />
+          <input class="btn btn-primary" type="submit" value="Submit" />
         </form>
         <form onSubmit = {this.handleSubmit}>
           <label>
             Enter starting URL:
-            <input type="text" name="url" onChange={this.handleUrl} />
+            <input class="form-control"type="text" name="url" onChange={this.handleUrl} />
           </label>
-          <input type="submit" value="Submit" />
+          <input class="btn btn-primary" type="submit" value="Submit" />
         </form>
-        <button onClick={crawl}>Crawl</button>
+        <button type="button" class="btn btn-outline-primary" onClick={crawl}>Crawl</button>
         <p id="url"></p>
         <p id="nolinks"></p>
         <p id="found"></p>
