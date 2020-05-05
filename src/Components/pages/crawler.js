@@ -13,7 +13,6 @@ var url = new URL(START_URL);
 var baseUrl = url.protocol + "//" + url.hostname;
 
 
-console.log("hii!");
 pagesToVisit.push(START_URL);
 crawl();
 

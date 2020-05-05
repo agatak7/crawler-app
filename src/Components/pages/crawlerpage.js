@@ -8,7 +8,7 @@ import React, { Component } from 'react';
 
   var CORS = "https://cors-anywhere.herokuapp.com/";
 
-  var START_URL = "https://www.huffingtonpost.com/";
+  let START_URL = "https://www.huffingtonpost.com/";
   let searchword = "battery";
   var MAX_PAGES_TO_VISIT = 10;
 
@@ -50,6 +50,8 @@ import React, { Component } from 'react';
     const urls ="Visiting page: " + url;
 
     ReactDOM.render(urls, document.getElementById('url'));
+    window.crawlerComponent.addURL(url);
+
 
 
     request(url, function(error, response, body) {
@@ -63,7 +65,7 @@ import React, { Component } from 'react';
        var $ = cheerio.load(body);
        var isWordFound = searchForWord($, searchword);
        if(isWordFound) {
-         const found ="Word " + searchword+ " found on " + url;
+         const found ="Word "+ searchword+ " found on " + url;
 
          ReactDOM.render(found, document.getElementById('found'));
 
@@ -89,8 +91,7 @@ import React, { Component } from 'react';
       });
       const links ="Found " + absoluteLinks.length + " links on page!";
 
-
-      ReactDOM.render(links, document.getElementById('nolinks'));
+      window.crawlerComponent.addNoLinks(links);
 
       console.log("Found " + absoluteLinks.length + " relative links on page");
   }
@@ -98,10 +99,38 @@ import React, { Component } from 'react';
 
 class WebCrawler extends Component {
 
-  handleSubmit = event => {
+  constructor(props) {
+    super(props);
+    this.state = {value: ''};
+    this.handleWord = this.handleWord.bind(this);
+    this.handleUrl = this.handleUrl.bind(this);
+    window.crawlerComponent = this;
+
+  }
+
+  handleWord = event => {
    event.preventDefault();
-   enterWord(this.input.value);
+   searchword = event.target.value;
   };
+
+  handleUrl = event => {
+   event.preventDefault();
+   START_URL = event.target.value;
+   pagesToVisit.push(CORS + START_URL);
+
+  };
+
+  handleSubmit = event => {
+    event.preventDefault();
+  }
+
+  addNoLinks(string){
+    document.getElementById("nolinks").innerHTML += string + '<br />';
+  }
+
+  addURL(string){
+    document.getElementById("url").innerHTML += string + '<br />';
+  }
 
 
   render() {
@@ -111,7 +140,14 @@ class WebCrawler extends Component {
         <form onSubmit = {this.handleSubmit}>
           <label>
             Enter word to search on:
-            <input type="text" name="word" ref={(input) => this.input = input} />
+            <input type="text" name="word" onChange={this.handleWord} />
+          </label>
+          <input type="submit" value="Submit" />
+        </form>
+        <form onSubmit = {this.handleSubmit}>
+          <label>
+            Enter starting URL:
+            <input type="text" name="url" onChange={this.handleUrl} />
           </label>
           <input type="submit" value="Submit" />
         </form>
