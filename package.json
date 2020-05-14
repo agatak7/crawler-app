@@ -17,7 +17,7 @@
     "concurrently": "^4.0.1"
   },
   "scripts": {
-    "start": "PORT=5000 react-scripts start",
+    "start": "PORT=1337 react-scripts start",
     "server": "nodemon src/Server/server.js",
     "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn start\"",
     "start-pc": "set PORT=5000 && react-scripts start",
