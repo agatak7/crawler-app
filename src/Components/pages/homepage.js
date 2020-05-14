@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 
 class Home extends Component {
-  render() {
+render() {
     return (
-      <div className="container-fluid">
-        Home Page Content Here
-      </div>
-    );
+    <div className="Home">
+      <p>Home page content goes here</p>
+    </div>
+  );
   }
 }
 

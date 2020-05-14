@@ -1,2 +1,7 @@
+# Art Based Innovation Tool
 
-## Web Crawler in Javascript
+### Instructions to compile
+```javascript
+sudo npm install
+yarn dev
+```
