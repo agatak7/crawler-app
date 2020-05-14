@@ -7,10 +7,11 @@ const port = process.env.PORT || 3360;
 
 var connection = mysql.createConnection({
   //properties..
-  host: 'projects-db.ewi.tudelft.nl',
-  user: 'pu_in4artDB',
-  password: 'df0TzaxgPscY',
-  database: 'projects_in4artDB'
+   host: 'projects-db.ewi.tudelft.nl',
+   user: 'pu_art-tool',
+   password: '33Y3wt7Flg5k',
+   database: 'projects_art-tool'
+
 });
 
 

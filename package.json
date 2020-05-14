@@ -2,7 +2,7 @@
   "name": "crawler",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://localhost:3000/",
+  "proxy": "http://localhost:3360/",
   "dependencies": {
     "cheerio": "^0.22.0",
     "mysql": "^2.18.1",

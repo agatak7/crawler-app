@@ -8,7 +8,7 @@ class Header extends Component {
       <div className="Header">
       <header>
       <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-  <a class="navbar-brand" href="#">Art Based Innovation</a>
+  <a class="navbar-brand" href="#">Web Crawler</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
